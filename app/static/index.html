@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src='https://unpkg.com/react@18/umd/react.development.js'></script>
+  <script src='https://unpkg.com/react-dom@18/umd/react-dom.development.js'></script>
+  <script src='https://unpkg.com/@babel/standalone/babel.min.js'></script>
+  <link href='https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css' rel='stylesheet'>
+</head>
+<body class='bg-gray-100'>
+  <div id='root'></div>
+  <script type='text/babel'>
+    function App() {
+      const [view, setView] = React.useState('home');
+      const [cart, setCart] = React.useState([]);
+      const checkout = () => {
+        fetch('/api/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cart }) })
+        .then(res => res.json()).then(data => { alert(data.message || data.error); if(data.message) setCart([]); });
+      };
+      return (
+        <div className='p-8'>
+          <nav className='flex gap-4 mb-8 bg-white p-4 shadow'>
+            <button id='home' className='font-bold' onClick={() => setView('home')}>Home</button>
+            <button id='category' className='font-bold' onClick={() => setView('shop')}>Shop</button>
+            <button id='cart' className='font-bold bg-blue-500 text-white px-2 py-1 rounded' onClick={() => setView('cart')}>Cart ({cart.length})</button>
+          </nav>
+          {view === 'home' && <h1 className='text-2xl'>Welcome to Flipkart</h1>}
+          {view === 'shop' && <div><h1 className='text-2xl mb-4'>Dresses</h1><button id='product' className='bg-green-500 text-white px-4 py-2 rounded' onClick={() => setCart([...cart, 'Designer Dress'])}>Add Dress</button></div>}
+          {view === 'cart' && <div><h1 className='text-2xl mb-4'>Checkout</h1><input id='address' placeholder='Address' className='border p-2 mr-2' /><button id='submit' className='bg-red-500 text-white px-4 py-2 rounded' onClick={checkout}>Submit Order</button></div>}
+        </div>
+      );
+    }
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
